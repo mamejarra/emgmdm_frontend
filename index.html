@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Voitures</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Gestion des Voitures</h2>
+        
+        <form id="carForm" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" id="brand" class="form-control" placeholder="Marque" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" id="model" class="form-control" placeholder="Modèle" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" id="year" class="form-control" placeholder="Année" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </div>
+        </form>
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Année</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="carTableBody">
+                <!-- Les voitures seront affichées ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadCars);
+        document.getElementById("carForm").addEventListener("submit", addCar);
+
+        function loadCars() {
+            let cars = JSON.parse(localStorage.getItem("cars")) || [];
+            const carTableBody = document.getElementById("carTableBody");
+            carTableBody.innerHTML = "";
+            cars.forEach((car, index) => {
+                carTableBody.innerHTML += `
+                    <tr>
+                        <td>${car.brand}</td>
+                        <td>${car.model}</td>
+                        <td>${car.year}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editCar(${index})">Modifier</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCar(${index})">Supprimer</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function addCar(event) {
+            event.preventDefault();
+            let brand = document.getElementById("brand").value;
+            let model = document.getElementById("model").value;
+            let year = document.getElementById("year").value;
+            let cars = JSON.parse(localStorage.getItem("cars")) || [];
+            cars.push({ brand, model, year });
+            localStorage.setItem("cars", JSON.stringify(cars));
+            document.getElementById("carForm").reset();
+            loadCars();
+        }
+
+        function deleteCar(index) {
+            let cars = JSON.parse(localStorage.getItem("cars"));
+            cars.splice(index, 1);
+            localStorage.setItem("cars", JSON.stringify(cars));
+            loadCars();
+        }
+
+        function editCar(index) {
+            let cars = JSON.parse(localStorage.getItem("cars"));
+            let car = cars[index];
+            document.getElementById("brand").value = car.brand;
+            document.getElementById("model").value = car.model;
+            document.getElementById("year").value = car.year;
+            deleteCar(index);
+        }
+    </script>
+</body>
+</html>
